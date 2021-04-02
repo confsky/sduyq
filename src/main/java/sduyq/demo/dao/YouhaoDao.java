@@ -138,9 +138,9 @@ public class YouhaoDao {
 			}
 			if(cons[14]!=null&&cons[14].length()!=0){//开始时间
 				if (whereb){
-					where1=where1+"and gpstime between '"+cons[14]+"' ";
+					where1=where1+"and gpsdate between '"+cons[14]+"' ";
 				}else {
-					where1=where1+" gpstime between  '"+cons[14]+"' ";
+					where1=where1+" gpsdate between  '"+cons[14]+"' ";
 					whereb=true;
 				}
 			}
@@ -167,10 +167,10 @@ public class YouhaoDao {
 
 		// 查询油耗sql
 		String selectAllSql = "select chassis,avg(dayFuel) avg_fuel " + "from " + "(select * "
-				+ "from (select chassis,gpstime,(max(engtoltalfuel)-min(engtoltalfuel))*100/(max(gpsdistance)-min(gpsdistance)) dayFuel "
+				+ "from (select chassis,gpsdate,(max(engtoltalfuel)-min(engtoltalfuel))*100/(max(gpsdistance)-min(gpsdistance)) dayFuel "
 				+ "from fact_table inner join dim_table on fact_table.terminal_id=dim_table.terminal_id "
 				+where1
-				+ " group by chassis,gpstime) "
+				+ " group by chassis,gpsdate) "
 				+ "where"
 				+where2+" ) " + "group by chassis limit " + start + "," + end + ";";
 		Statement stmt = conn.createStatement();
@@ -310,9 +310,9 @@ public class YouhaoDao {
 			}
 			if(cons[14]!=null&&cons[14].length()!=0){//开始时间
 				if (whereb){
-					where1=where1+"and gpstime between '"+cons[14]+"' ";
+					where1=where1+"and gpsdate between '"+cons[14]+"' ";
 				}else {
-					where1=where1+" gpstime between  '"+cons[14]+"' ";
+					where1=where1+" gpsdate between  '"+cons[14]+"' ";
 					whereb=true;
 				}
 			}
@@ -337,10 +337,10 @@ public class YouhaoDao {
 			where2=" dayFuel>=5 and dayFuel<=100 ";
 		}
 		String selectAllSql ="select chassis,avg(dayFuel) avg_fuel " + "from " + "(select * "
-				+ "from (select chassis,gpstime,(max(engtoltalfuel)-min(engtoltalfuel))*100/(max(gpsdistance)-min(gpsdistance)) dayFuel "
+				+ "from (select chassis,gpsdate,(max(engtoltalfuel)-min(engtoltalfuel))*100/(max(gpsdistance)-min(gpsdistance)) dayFuel "
 				+ "from fact_table inner join dim_table on fact_table.terminal_id=dim_table.terminal_id "
 				+ where1
-				+ " group by chassis,gpstime) "
+				+ " group by chassis,gpsdate) "
 				+ "where"
 				+where2+" ) " + "group by chassis ;";
 		System.out.println("\n查表:"+selectAllSql+"\n");
@@ -467,9 +467,9 @@ public class YouhaoDao {
 			}
 			if(cons[14]!=null&&cons[14].length()!=0){//开始时间
 				if (whereb){
-					where1=where1+"and gpstime between '"+cons[14]+"' ";
+					where1=where1+"and gpsdate between '"+cons[14]+"' ";
 				}else {
-					where1=where1+" gpstime between  '"+cons[14]+"' ";
+					where1=where1+" gpsdate between  '"+cons[14]+"' ";
 					whereb=true;
 				}
 			}
@@ -505,12 +505,12 @@ public class YouhaoDao {
 			x[i][0]=start+i*lens;
 			x[i][1]=x[i][0]+lens;
 		}
-		//String sql="select chassis,avg(dayFuel) avg_fuel from (select * from (select chassis,gpstime,(max(engtoltalfuel)-min(engtoltalfuel))*100/(max(gpsdistance)-min(gpsdistance)) dayFuel from fact_table inner join dim_table on fact_table.terminal_id=dim_table.terminal_id  group by chassis,gpstime) where dayFuel>=5 and dayFuel<=100  ) group by chassis";
+		//String sql="select chassis,avg(dayFuel) avg_fuel from (select * from (select chassis,gpsdate,(max(engtoltalfuel)-min(engtoltalfuel))*100/(max(gpsdistance)-min(gpsdistance)) dayFuel from fact_table inner join dim_table on fact_table.terminal_id=dim_table.terminal_id  group by chassis,gpsdate) where dayFuel>=5 and dayFuel<=100  ) group by chassis";
 		String selectAllSql ="select avg(dayFuel) avg_fuel " + "from " + "(select * "
-				+ "from (select chassis,gpstime,(max(engtoltalfuel)-min(engtoltalfuel))*100/(max(gpsdistance)-min(gpsdistance)) dayFuel "
+				+ "from (select chassis,gpsdate,(max(engtoltalfuel)-min(engtoltalfuel))*100/(max(gpsdistance)-min(gpsdistance)) dayFuel "
 				+ "from fact_table inner join dim_table on fact_table.terminal_id=dim_table.terminal_id "
 				+ where1
-				+ " group by chassis,gpstime) "
+				+ " group by chassis,gpsdate) "
 				+ "where"
 				+where2+" ) " + "group by chassis ;";
 		System.out.println("查 bar");
@@ -676,9 +676,9 @@ public class YouhaoDao {
 				}
 				if(cons[14]!=null&&cons[14].length()!=0){//开始时间
 					if (whereb){
-						where1=where1+"and gpstime between '"+cons[14]+"' ";
+						where1=where1+"and gpsdate between '"+cons[14]+"' ";
 					}else {
-						where1=where1+" gpstime between  '"+cons[14]+"' ";
+						where1=where1+" gpsdate between  '"+cons[14]+"' ";
 						whereb=true;
 					}
 				}
@@ -707,10 +707,10 @@ public class YouhaoDao {
 
 //			String selectAllSql="select chassis from dim_table where chassis in ("+inchassis+")";
 			String selectAllSql ="select chassis,avg(dayFuel) avg_fuel " + "from " + "(select * "
-					+ "from (select chassis,gpstime,(max(engtoltalfuel)-min(engtoltalfuel))*100/(max(gpsdistance)-min(gpsdistance)) dayFuel "
+					+ "from (select chassis,gpsdate,(max(engtoltalfuel)-min(engtoltalfuel))*100/(max(gpsdistance)-min(gpsdistance)) dayFuel "
 					+ "from fact_table inner join dim_table on fact_table.terminal_id=dim_table.terminal_id "
 					+ inchassis+")"+where1
-					+ "group by chassis,gpstime) "
+					+ "group by chassis,gpsdate) "
 					+ "where"
 					+where2+" ) " + "group by chassis ;";
 			System.out.println("文件查询"+selectAllSql);
