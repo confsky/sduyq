@@ -1,0 +1,425 @@
+<!DOCTYPE html >
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>油耗统计</title>
+    <link th:href="@{~/static/css/bootstrap.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{~/static/css/bootstrap-table.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{~/static/css/bootstrap-datepicker.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{~/static/css/bootstrap-datepicker3.min.css}" rel="stylesheet" type="text/css">
+    <link th:href="@{~/static/css/fileinput.css}" rel="stylesheet" type="text/css">
+</head>
+<body>
+
+<div class="col-sm-12 select-table table-striped" style="width:100%">
+<!--        <div class="col-md-3">-->
+<!--            <div class="form-group">-->
+<!--                <label class="control-label col-md-4">平台</label>-->
+<!--                <div class="col-md-8">-->
+<!--                    <input type="text" id="pingtai" class="form-control">-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="col-md-3">-->
+<!--            <div>-->
+<!--               <button id="serchY" onclick="search()">搜索</button>-->
+<!--            </div>-->
+<!--        </div>-->
+
+    <div style="width: 50%" >
+        <p></p>
+        <p class="bg-primary text-center">搜索条件</p>
+        <input class="tt" type="text" name="chassis" id="chassis" placeholder="底盘号"  />
+        <input class="tt" type="text" name="plate" id="plate" placeholder="车牌号"  />
+        <input class="tt" type="text" name="platform" id="platform" placeholder="平台车型"  />
+        <input class="tt" type="text" name="vehicle" id="vehicle" placeholder="车辆类别"  />
+        <input class="tt" type="text" name="engine" id="engine" placeholder="发动机类型"  />
+        <input class="tt" type="text" name="clutch" id="clutch" placeholder="离合器"  />
+        <input class="tt" type="text" name="driving" id="driving" placeholder="驱动形式"  />
+        <input class="tt" type="text" name="gearbox" id="gearbox" placeholder="变速箱类型"  />
+        <input class="tt" type="text" name="rear" id="rear" placeholder="后桥类型"  />
+        <input class="tt" type="text" name="frame" id="frame" placeholder="车架类型"  />
+        <input class="tt" type="text" name="wheelbase" id="wheelbase" placeholder="轴距"  />
+        <input class="tt" type="text" name="wheel" id="wheel" placeholder="轮胎类型"  />
+        <form class="form-inline text-center">
+            <input  type="text" name="wheel" id="mindayfule" placeholder="油耗最小滤波"  />
+            <span class="tt">to</span>
+            <input  type="text" name="wheel" id="maxdayfule" placeholder="油耗最大滤波"  />
+
+        </form>
+<!--        <input class="tt" type="text" name="wheel" id="mindayfule" placeholder="油耗最小滤波"  />-->
+<!--        <span class="tt">to</span>-->
+<!--        <input class="tt" type="text" name="wheel" id="maxdayfule" placeholder="油耗最大滤波"  />-->
+        <form class="form-inline text-center">
+            <input type="search"  id="starttimedd" name="start" placeholder="起始时间"/>
+            <span class="tt">to</span>
+            <input  type="search"  id="endtimedd" name="end" placeholder="终止时间"/>
+
+        </form>
+
+    </div>
+    <div style="width: 50%">
+<!--        <button data-dismiss="modal" class="btn btn-default"  type="button">关闭</button>-->
+<!--        <a class="btn btn-primary"  onclick="onSearch()" type="button">查询报表</a>-->
+        <div class="text-center">
+            <p></p>
+            <form class="form-inline">
+                <button class="btn btn-primary "  onclick="onSearch()" type="button">查询报表</button>
+                <button class="btn btn-primary"  onclick="onSearch2()" type="button">显示分布图</button>
+            </form>
+            <p></p>
+        </div>
+    </div>
+    <div style="width: 50%">
+        <form enctype="multipart/form-data">
+            <input  type="file" class="file-loading" data-show-preview="false" name="upfile" id="upfile">
+        </form>
+    </div>
+    <div class="col-sm-12" style="width: 35%;height: 600px">
+        <table class="table table-striped " data-mobile-responsive="true"  id="tabelYH"
+               data-pagination="true"
+               data-side-pagination="server"
+               data-page-size="20">
+        </table>
+    </div>
+    <div class="col-sm-12" style="width: 65%;height: 600px">
+        <div style="width: 90%;height:550px;" id="chartdom"> </div>
+    </div>
+
+</div>
+
+<script th:src="@{~/static/js/jquery-3.6.0.js}" type="text/javascript" ></script>
+<script  th:src="@{~/static/js/echarts.min.js}" type="text/javascript"></script>
+<script th:src="@{~/static/js/bootstrap.js}" type="text/javascript"></script>
+<script th:src="@{~/static/js/bootstrap-table.js}" type="text/javascript"></script>
+<script th:src="@{~/static/js/bootstrap-table-zh-CN.js}" type="text/javascript"></script>
+<script th:src="@{~/static/js/bootstrap-datepicker.js}" type="text/javascript"></script>
+<script th:src="@{~/static/js/bootstrap-datepicker.zh-CN.min.js}" type="text/javascript"></script>
+<script th:src="@{~/static/js/fileinput.js}" type="text/javascript"></script>
+<script th:src="@{~/static/js/zh.js}" type="text/javascript"></script>
+
+<script>
+    function getcont(){
+        let s0 = document.getElementById('chassis').value;
+        let s1 = document.getElementById('plate').value;
+        let s2 = document.getElementById('platform').value;
+        let s3 = document.getElementById('vehicle').value;
+        let s4 = document.getElementById('engine').value;
+        let s5 = document.getElementById('clutch').value;
+        let s6 = document.getElementById('driving').value;
+        let s7 = document.getElementById('gearbox').value;
+        let s8 = document.getElementById('rear').value;
+        let s9 = document.getElementById('frame').value;
+        let s10 = document.getElementById('wheelbase').value;
+        let s11 = document.getElementById('wheel').value;
+        let s12 = document.getElementById('mindayfule').value;
+        let s13 = document.getElementById('maxdayfule').value;
+        let s14 =document.getElementById("starttimedd").value;
+        let s15=document.getElementById('endtimedd').value;
+        // console.log("s14",s14)
+        let cont=s0+";"+s1+";"+s2+";"+s3+";"+s4+";"+s5+";"+s6+";";
+        cont=cont+s7+";"+s8+";"+s9+";"+s10+";"+s11+";"+s12+";"+s13+";"+s14+";"+s15;
+        console.log(cont)
+        return cont;
+    }
+    //在途重现
+    $("#starttimedd").datepicker({
+        language:"zh-CN",
+        autoclose:true
+    });
+    $("#endtimedd").datepicker({
+        language:"zh-CN",
+        autoclose:true
+    });
+    $("#upfile").fileinput({
+        language: 'zh', //设置语言
+        uploadUrl: "/system/YH/yhexcel", //上传的地址
+        allowedFileExtensions: ['xlsx'],//接收的文件后缀
+        //uploadExtraData:{"id": 1, "fileName":'123.mp3'},
+        uploadAsync: true, //默认异步上传
+        showUpload: true, //是否显示上传按钮
+        showRemove : true, //显示移除按钮
+        uploadExtraData:function (){
+            let cont=getcont();
+            return {parm:cont}
+        },
+        // showPreview : true, //是否显示预览
+        // showCaption: false,//是否显示标题
+        // browseClass: "btn btn-primary", //按钮样式     
+        // dropZoneEnabled: false,//是否显示拖拽区域
+        //minImageWidth: 50, //图片的最小宽度
+        //minImageHeight: 50,//图片的最小高度
+        //maxImageWidth: 1000,//图片的最大宽度
+        //maxImageHeight: 1000,//图片的最大高度
+        //maxFileSize: 0,//单位为kb，如果为0表示不限制文件大小
+        //minFileCount: 0,
+        maxFileCount: 1, //表示允许同时上传的最大文件个数
+        enctype: 'multipart/form-data',
+        // validateInitialCount:true,
+        // previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
+        msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",
+
+    });
+    $('#upfile').on('fileuploaded',function (event, data, previewId, index){
+        let response = data.response
+        console.log("hhhh"+response['bardata']);//打印出返回的json
+        console.log(response['bardata'].length)
+        if (chartinit){
+            YHchart.clear();
+        }
+        let bardata=response['bardata'];
+        let edata4 = new Array();
+        for(var i=0;i<(bardata.length);i++){
+            let xs=bardata[i][0]+"-"+bardata[i][1]
+            edata4.push([xs,bardata[i][2]]);
+        }
+        console.log(edata4)
+        chartinit=true;
+        YHchart.hideLoading();    //隐藏加载动画
+        YHchart.setOption(options)
+        YHchart.setOption({        //加载数据图表
+            series: [{
+                // 根据名字对应到相应的系列  name:
+                data: edata4
+            }]
+        });
+
+
+        $("#tabelYH").bootstrapTable("destroy");
+        $("#tabelYH").bootstrapTable({
+            data: response['rows'],                 //使用data的方式处理数据
+            // method: 'get',                      // 请求方式 post 请求
+            striped: true,                      //是否显示行间隔色
+            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true,                   //是否显示分页（*）
+            sortable: false,                     //是否启用排序
+            sortOrder: "asc",                   //排序方式
+            sidePagination: "client",           //分页方式：client客户端分页，server服务端分页（*）
+            // queryParamsType:'limit',
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
+            pageSize: 10,                       //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+            //search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+            strictSearch: true,
+            paginationPreText: '上一页',
+            paginationNextText: '下一页',
+            // showColumns: true,                  //是否显示所有的列
+            // minimumCountColumns: 2,             //最少允许的列数
+            // clickToSelect: true,                //是否启用点击选中行
+            height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            idField: "chassis",                     //指定主键
+            // showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
+            cardView: false,                    //是否显示详细视图
+            detailView: false,                   //是否显示父子表
+            datatype: "json",
+            undefinedText: "*",
+            columns: [{
+                field: 'chassis',
+                title: '底盘号'
+            }, {
+                field: 'avg_fuel',
+                title: '每日平均油耗'
+            }]
+        });
+
+
+    });
+
+    var YHchart = echarts.init(document.getElementById('chartdom'));
+    //edata = [ ['0-10',10],['10,20',5],['20,30',12],['30,40',3],['40,50',8],['50,60',5],['60,70',2],['70,80',10],['80,90',15],['90,100',20]];
+    let options={
+        color: ['rgb(25, 183, 207)'],
+        title:{
+            show:true,
+            text:'油耗分布图'
+        },
+        legend:{
+            show:true
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                type: 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+            }
+        },
+        xAxis:{
+            type:'category',
+            name:'油耗[L/100KM]',
+            interval:0,
+        },
+        yAxis:{
+            type:'value',
+            name:'占比',
+
+        },
+        series: [{
+            name: '油耗分布图',
+            type:'bar',
+            label:{
+                show:true,
+                position:'top',
+            },
+            //data:edata,
+        }]
+
+    }
+    YHchart.setOption(options);
+    <!--    油耗统计表-->
+    // 销毁之前的表
+    // 初始加载
+    $("#tabelYH").bootstrapTable("destroy");
+    $("#tabelYH").bootstrapTable({
+        url: "/system/YH/yhtable",                 //请求后台的URL（*）
+        method: 'get',                      // 请求方式 post 请求
+        striped: true,                      //是否显示行间隔色
+        cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+        pagination: true,                   //是否显示分页（*）
+        sortable: false,                     //是否启用排序
+        sortOrder: "asc",                   //排序方式
+        sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+        queryParamsType:'limit',
+        pageNumber: 1,                       //初始化加载第一页，默认第一页
+        pageSize: 10,                       //每页的记录行数（*）
+        pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+        //search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+        strictSearch: true,
+        paginationPreText: '上一页',
+        paginationNextText: '下一页',
+        // showColumns: true,                  //是否显示所有的列
+        // minimumCountColumns: 2,             //最少允许的列数
+        // clickToSelect: true,                //是否启用点击选中行
+        height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+        idField: "chassis",                     //指定主键
+        // showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
+        cardView: false,                    //是否显示详细视图
+        detailView: false,                   //是否显示父子表
+        datatype: "json",
+        undefinedText: "*",
+        queryParams: function (params) {
+            return {//这里的params是table提供的
+                offset: params.offset,//从数据库第几条记录开始
+                limit: params.limit,//找多少条
+                // memberId: $("#searchString_id").val() //这个就是搜索框中的内容，可以自动传到后台，搜索实现在xml中体现
+
+            };
+        },
+        responseHandler: function(res){
+            return {
+                "total": res.total,
+                "rows": res.rows
+            };
+        },
+        columns: [{
+            field: 'chassis',
+            title: '底盘号'
+        }, {
+            field: 'avg_fuel',
+            title: '每日平均油耗'
+        }]
+    });
+    // YHchart.showLoading();
+    // setTimeout("jiazai()",10);
+    let chartinit=false;
+    function onSearch2(){
+        if (chartinit){
+            YHchart.clear();
+        }
+        let cont=getcont()
+        YHchart.showLoading();
+        let edata3 = new Array();
+        $.ajax({
+            type : "post",
+            async : true,            //异步请求（同步请求将会锁住浏览器，用户其他操作必须等待请求完成才可以执行）
+            url : "/system/YH/yhbar",    //请求发送到TestServlet处
+            data : {parm:cont},
+            dataType : "json",        //返回数据形式为json
+            success : function(result) {
+                //请求成功时执行该函数内容，result即为服务器返回的json对象
+                if (result) {
+                    for(var i=0;i<(result.length);i++){
+                        let xs=result[i][0]+"-"+result[i][1]
+                        edata3.push([xs,result[i][2]]);
+                    }
+                    console.log(edata3)
+                    chartinit=true;
+                    YHchart.hideLoading();    //隐藏加载动画
+                    YHchart.setOption(options)
+                    YHchart.setOption({        //加载数据图表
+                        series: [{
+                            // 根据名字对应到相应的系列  name:
+                            data: edata3
+                        }]
+                    });
+                }
+            },
+            error : function(errorMsg) {
+                //请求失败时执行该函数
+                alert("图表请求数据失败!");
+                YHchart.hideLoading();
+            }
+        });
+        window.addEventListener("resize",function(){
+            YHchart.resize();
+        });
+    }
+
+
+    function onSearch(){
+
+        let cont=getcont();
+
+        $("#tabelYH").bootstrapTable("destroy");
+        $("#tabelYH").bootstrapTable({
+            url: "/system/YH/yhtable",                 //请求后台的URL（*）
+            method: 'get',                      // 请求方式 post 请求
+            striped: true,                      //是否显示行间隔色
+            cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+            pagination: true,                   //是否显示分页（*）
+            sortable: false,                     //是否启用排序
+            sortOrder: "asc",                   //排序方式
+            sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+            queryParamsType:'limit',
+            pageNumber: 1,                       //初始化加载第一页，默认第一页
+            pageSize: 10,                       //每页的记录行数（*）
+            pageList: [10, 25, 50, 100],        //可供选择的每页的行数（*）
+            //search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+            strictSearch: true,
+            paginationPreText: '上一页',
+            paginationNextText: '下一页',
+            // showColumns: true,                  //是否显示所有的列
+            // minimumCountColumns: 2,             //最少允许的列数
+            // clickToSelect: true,                //是否启用点击选中行
+            height: 500,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+            idField: "chassis",                     //指定主键
+            // showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
+            cardView: false,                    //是否显示详细视图
+            detailView: false,                   //是否显示父子表
+            datatype: "json",
+            undefinedText: "*",
+            queryParams: function (params) {
+                return {//这里的params是table提供的
+                    offset: params.offset,//从数据库第几条记录开始
+                    limit: params.limit,//找多少条
+                    // memberId: $("#searchString_id").val() //这个就是搜索框中的内容，可以自动传到后台，搜索实现在xml中体现
+                    searchcondition:cont
+
+                };
+            },
+            responseHandler: function(res){
+                return {
+                    "total": res.total,
+                    "rows": res.rows
+                };
+            },
+            columns: [{
+                field: 'chassis',
+                title: '底盘号'
+            }, {
+                field: 'avg_fuel',
+                title: '每日平均油耗'
+            }]
+        });
+    }
+</script>
+</body>
+</html>4
