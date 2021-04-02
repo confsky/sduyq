@@ -193,7 +193,7 @@ public class YouhaoDao {
 		conn.close();
 		return youhaoList;
 	}
-
+	//获取查询总数
 	public static int getTotal(String cont) throws SQLException {
 		int columnCount = 0;
 		JDBCUtil jdbcutil = new JDBCUtil();
